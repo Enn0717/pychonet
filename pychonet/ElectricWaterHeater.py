@@ -282,3 +282,25 @@ class ElectricWaterHeater(EchonetInstance):
         EchonetInstance.__init__(
             self, host, self._eojgc, self._eojcc, instance, api_connector
         )
+
+    async def setSurplusElectricEnergyPrediction(self, prediction_data):
+        """
+        Set surplus electric energy power prediction value (EPC 0xD9)
+
+        Args:
+            prediction_data (bytes): 51 bytes of prediction data
+                - Byte 1: Month (MM)
+                - Byte 2: Day (DD)
+                - Byte 3: Hour (hh)
+                - Bytes 4-51: 24 hourly predictions (2 bytes each, signed short)
+
+        Returns:
+            Response from device
+
+        Raises:
+            ValueError: If prediction_data is not exactly 51 bytes
+        """
+        if len(prediction_data) != 51:
+            raise ValueError("Prediction data must be exactly 51 bytes")
+
+        return await self.setMessage(0xD9, prediction_data)
